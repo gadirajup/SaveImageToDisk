@@ -93,6 +93,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
             print("Failed to save image to Disk: ", error.localizedDescription)
         }
     }
+    
     @IBAction func image(_ sender: Any) {
         let ac = UIAlertController(title: "Choose filter", message: nil, preferredStyle: .actionSheet)
         ac.popoverPresentationController?.sourceView = slider
@@ -106,10 +107,26 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         ac.addAction(UIAlertAction(title: "Cancel", style: .cancel))
         present(ac, animated: true)
     }
+    
     @IBAction func handleSave(_ sender: Any) {
+        UIImageWriteToSavedPhotosAlbum(selectedImage.image!, self, #selector(image(_:didFinishSavingWithError:contextInfo:)), nil)
     }
+    
+    
     @IBAction func intensityChanged(_ sender: Any) {
         applyProcessing()
+    }
+    
+    @objc func image(_ image: UIImage, didFinishSavingWithError error: NSError?, contextInfo: UnsafeRawPointer) {
+        if let error = error {
+            let ac = UIAlertController(title: "Save error", message: error.localizedDescription, preferredStyle: .alert)
+            ac.addAction(UIAlertAction(title: "OK", style: .default))
+            present(ac, animated: true)
+        } else {
+            let ac = UIAlertController(title: "Saved!", message: "Your altered image has been saved to your photos.", preferredStyle: .alert)
+            ac.addAction(UIAlertAction(title: "OK", style: .default))
+            present(ac, animated: true)
+        }
     }
 }
 
